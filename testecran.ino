@@ -49,53 +49,107 @@ uint8_t WEAPON_ORDER[WEAPON_COUNT];
 uint8_t WEAPON_ORDER_SIZE = 0;
 
 // ======================= PATTERNS (PROGMEM) ===============================
-// Définitions par défaut pour les armes désactivées
-#ifndef CFG_ENABLE_R99
-#define NAME_R99      "R99"
-#define SIZE_R99      0
-#define TP_R99        nullptr
-#define X_R99         nullptr
-#define Y_R99         nullptr
+// Patterns conditionnels selon les armes activées
+
+#if CFG_ENABLE_R99 == 1
+const char NAME_R99[] PROGMEM = "R99";
+const uint8_t SIZE_R99 = 30;
+const uint16_t TP_R99[SIZE_R99] PROGMEM = {
+  0,55,111,166,222,277,333,388,444,500,555,611,666,722,777,833,888,944,1000,1055,1111,1166,1222,1277,1333,1388,1444,1500,1555,1611
+};
+const float X_R99[SIZE_R99] PROGMEM = {
+  0,6.9,9.1,2.1,0.5,12.5,26.2,39.8,48.3,51.9,38.9,24.9,22,17.6,23.4,34.5,47.8,64.5,47.4,30.3,10.3,0.8,-11.5,0.4,15.4,35.6,44.4,32.8,16.8,26.6
+};
+const float Y_R99[SIZE_R99] PROGMEM = {
+  0,-31.1,-57,-82.8,-124.2,-178.8,-223.1,-255.6,-297.3,-329.1,-365.6,-400.9,-428.9,-467.5,-477.7,-483.6,-496.4,-495.2,-517.8,-518.9,-526.8,-532.9,-537.6,-546.1,-540.5,-539.6,-545.7,-554.1,-561.8,-577.7
+};
+#else
+const char NAME_R99[] PROGMEM = "R99";
+const uint8_t SIZE_R99 = 0;
+const uint16_t* TP_R99 = nullptr;
+const float* X_R99 = nullptr;
+const float* Y_R99 = nullptr;
 #endif
 
-#ifndef CFG_ENABLE_R301
-#define NAME_R301     "R301"
-#define SIZE_R301     0
-#define TP_R301       nullptr
-#define X_R301        nullptr
-#define Y_R301        nullptr
+#if CFG_ENABLE_R301 == 1
+const char NAME_R301[] PROGMEM = "R301";
+const uint8_t SIZE_R301 = 31;
+const uint16_t TP_R301[SIZE_R301] PROGMEM = {
+  0,74,148,222,296,370,444,518,592,666,740,814,888,962,1037,1111,1185,1259,1333,1407,1481,1555,1629,1703,1777,1851,1925,2000,2074,2148,2222
+};
+const float X_R301[SIZE_R301] PROGMEM = {
+  0,12.5,11.4,25.7,24.2,26.7,26.2,30,36.9,46.7,59.5,65.3,55.8,43.5,30.7,17,5,-4.6,-7.6,-1.2,9.2,21.2,31.1,43,51.6,59.6,65.9,67.6,67.8,71.4,75.6
+};
+const float Y_R301[SIZE_R301] PROGMEM = {
+  0,-26.3,-61.7,-86,-113.6,-136.2,-150.7,-161.9,-167.5,-175.6,-172.3,-182.4,-199.3,-213.7,-224.6,-227.4,-226.5,-226.7,-237.6,-246.4,-256.2,-259.1,-266.2,-262.7,-261.4,-260.3,-266.5,-272.6,-280.8,-288.8,-294.5
+};
+#else
+const char NAME_R301[] PROGMEM = "R301";
+const uint8_t SIZE_R301 = 0;
+const uint16_t* TP_R301 = nullptr;
+const float* X_R301 = nullptr;
+const float* Y_R301 = nullptr;
 #endif
 
-#ifndef CFG_ENABLE_FLATLINE
-#define NAME_FLAT     "FLATLINE"
-#define SIZE_FLAT     0
-#define TP_FLAT       nullptr
-#define X_FLAT        nullptr
-#define Y_FLAT        nullptr
+#if CFG_ENABLE_FLATLINE == 1
+const char NAME_FLAT[] PROGMEM = "FLATLINE";
+const uint8_t SIZE_FLAT = 29;
+const uint16_t TP_FLAT[SIZE_FLAT] PROGMEM = {
+  0,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500,2600,2700,2800
+};
+const float X_FLAT[SIZE_FLAT] PROGMEM = {
+  0,-14.1,-18.1,-42.7,-63,-65.7,-63.4,-50.8,-28.5,-20.4,-13.6,-11.8,-23.8,-46.9,-68.1,-89.5,-93.5,-101.7,-123,-144.7,-155.5,-160.2,-155.2,-140,-122.7,-107.5,-92.4,-77.9,-75.1
+};
+const float Y_FLAT[SIZE_FLAT] PROGMEM = {
+  0,-47.8,-68,-101.6,-122.5,-150.6,-178.3,-185.3,-175.5,-171,-182.2,-202.1,-208.4,-226.3,-226.5,-227.6,-244.7,-266.2,-280,-294.9,-296.7,-303.4,-317.9,-323.3,-333.1,-337,-341.3,-338.5,-355.9
+};
+#else
+const char NAME_FLAT[] PROGMEM = "FLATLINE";
+const uint8_t SIZE_FLAT = 0;
+const uint16_t* TP_FLAT = nullptr;
+const float* X_FLAT = nullptr;
+const float* Y_FLAT = nullptr;
 #endif
 
-#ifndef CFG_ENABLE_VOLT
-#define NAME_VOLT     "VOLT"
-#define SIZE_VOLT     0
-#define TP_VOLT       nullptr
-#define X_VOLT        nullptr
-#define Y_VOLT        nullptr
+#if CFG_ENABLE_VOLT == 1
+const char NAME_VOLT[] PROGMEM = "VOLT";
+const uint8_t SIZE_VOLT = 26;
+const uint16_t TP_VOLT[SIZE_VOLT] PROGMEM = {
+  0,83,167,250,333,417,500,583,667,750,833,917,1000,1083,1167,1250,1333,1417,1500,1583,1667,1750,1833,1917,2000,2083
+};
+const float X_VOLT[SIZE_VOLT] PROGMEM = {
+  0,11.2,13.8,10.4,21.2,20.5,39.3,44.7,35,46.2,44.6,28.5,8,-5.1,-17.4,-12.8,0.5,10,5.9,-3.1,-12.9,-21.1,-23.1,-23.1,-24.9,-26.3
+};
+const float Y_VOLT[SIZE_VOLT] PROGMEM = {
+  0,-28.6,-64,-106.9,-128.8,-177.8,-205.6,-248.3,-279.3,-312.2,-333.8,-339.7,-336.4,-350,-365.8,-376.8,-377.4,-379,-388.2,-395.3,-399.4,-398.7,-401,-407.5,-414,-427
+};
+#else
+const char NAME_VOLT[] PROGMEM = "VOLT";
+const uint8_t SIZE_VOLT = 0;
+const uint16_t* TP_VOLT = nullptr;
+const float* X_VOLT = nullptr;
+const float* Y_VOLT = nullptr;
 #endif
 
-#ifndef CFG_ENABLE_SPITFIRE
-#define NAME_SPITFIRE "SPITFIRE"
-#define SIZE_SPITFIRE 0
-#define TP_SPITFIRE   nullptr
-#define X_SPITFIRE    nullptr
-#define Y_SPITFIRE    nullptr
+#if CFG_ENABLE_SPITFIRE == 1
+const char NAME_SPITFIRE[] PROGMEM = "SPITFIRE";
+const uint8_t SIZE_SPITFIRE = 55;
+const uint16_t TP_SPITFIRE[SIZE_SPITFIRE] PROGMEM = {
+  0,111,222,333,444,555,666,777,888,1000,1111,1222,1333,1444,1555,1666,1777,1888,2000,2111,2222,2333,2444,2555,2666,2777,2888,3000,3111,3222,3333,3444,3555,3666,3777,3888,4000,4111,4222,4333,4444,4555,4666,4777,4888,5000,5111,5222,5333,5444,5555,5666,5777,5888,6000
+};
+const float X_SPITFIRE[SIZE_SPITFIRE] PROGMEM = {
+  0,-2.1,-4.8,-17.1,-24.8,-30.4,-30.4,-24.5,-13.4,-10.5,-5.8,-3.1,-10.2,-24.1,-33.6,-46.6,-53,-58.1,-63,-73.1,-85,-90.8,-88.2,-77.3,-70.1,-59.7,-48.7,-36.8,-32.9,-27,-26.4,-13.4,-8.7,-3.4,0.6,-6.1,-19.4,-25,-38.4,-45.7,-47.4,-51.3,-61,-73.1,-78.5,-75.8,-67.2,-61.4,-50.3,-39.7,-27.7,-23.6,-17.1,-17.6,-3.3
+};
+const float Y_SPITFIRE[SIZE_SPITFIRE] PROGMEM = {
+  0,-35.4,-47.7,-69.2,-84.4,-105.3,-128.2,-135.1,-131.3,-128,-134.7,-150.5,-156.2,-166.2,-170.3,-166.2,-169.8,-188.1,-204.6,-213.7,-217,-218.2,-230.6,-236.7,-241.6,-247.7,-252.3,-245.7,-256,-269.6,-278,-274.4,-269.6,-276.2,-290.2,-293.2,-303.7,-305.8,-300.6,-302.7,-321.3,-340,-351.8,-355.8,-357.6,-371.9,-381.2,-388.3,-397.7,-403.3,-398.6,-410.3,-424.8,-437.8,-435.1
+};
+#else
+const char NAME_SPITFIRE[] PROGMEM = "SPITFIRE";
+const uint8_t SIZE_SPITFIRE = 0;
+const uint16_t* TP_SPITFIRE = nullptr;
+const float* X_SPITFIRE = nullptr;
+const float* Y_SPITFIRE = nullptr;
 #endif
-
-// Inclusions conditionnelles des patterns d'armes
-#include "weapons_r99.h"
-#include "weapons_r301.h"
-#include "weapons_flatline.h"
-#include "weapons_volt.h"
-#include "weapons_spitfire.h"
 
 
 // ======================= CATALOGUE & ETAT ================================
