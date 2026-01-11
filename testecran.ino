@@ -406,23 +406,55 @@ static void updateDisplay(){
 
     u8g2.setFont(u8g2_font_t0_22_tr);
 
-    // -------- Ligne 1 : TROLL ENZO (centré) --------
-    const char* line1 = "ENZO";
+    // -------- Ligne 1 : ARME ACTUELLE OU OFF (centré) --------
+    char line1[16];
+    if (scriptEnabled && currentWeaponIndex >= 0) {
+      strcpy_P(line1, weapons[currentWeaponIndex].name_P);
+    } else {
+      strcpy(line1, "OFF");
+    }
     uint8_t w1 = u8g2.getStrWidth(line1);
     uint8_t x1 = (128 - w1) / 2;
     u8g2.drawStr(x1, 48, line1);
 
-    // -------- Ligne 2 : AIME (centré) --------
-    const char* line2 = "AIME";
+    // -------- Ligne 2 : PROCHAINE ARME (centrée, toujours) --------
+    char line2[24];
+    char nextName[12];
+    bool hasNext = false;
+
+    if (WEAPON_ORDER_SIZE > 0) {
+      if (currentOrderPosition < 0) {
+        // OFF -> prochaine = première arme active
+        for (uint8_t i = 0; i < WEAPON_ORDER_SIZE; i++) {
+          uint8_t idx = WEAPON_ORDER[i];
+          if (((Weapon&)weapons[idx]).enabled) {
+            strcpy_P(nextName, weapons[idx].name_P);
+            hasNext = true;
+            break;
+          }
+        }
+      } else {
+        // Sinon -> prochaine arme active après la position actuelle
+        for (uint8_t pos = currentOrderPosition + 1; pos < WEAPON_ORDER_SIZE; pos++) {
+          uint8_t idx = WEAPON_ORDER[pos];
+          if (((Weapon&)weapons[idx]).enabled) {
+            strcpy_P(nextName, weapons[idx].name_P);
+            hasNext = true;
+            break;
+          }
+        }
+      }
+    }
+
+    if (hasNext) {
+      strcpy(line2, nextName);
+    } else {
+      strcpy(line2, "OFF");
+    }
+
     uint8_t w2 = u8g2.getStrWidth(line2);
     uint8_t x2 = (128 - w2) / 2;
-    u8g2.drawStr(x2, 72, line2);
-
-    // -------- Ligne 3 : ZIZI (centré) --------
-    const char* line3 = "ZIZI";
-    uint8_t w3 = u8g2.getStrWidth(line3);
-    uint8_t x3 = (128 - w3) / 2;
-    u8g2.drawStr(x3, 96, line3);
+    u8g2.drawStr(x2, 80, line2);
 
   } while (u8g2.nextPage());
 }
