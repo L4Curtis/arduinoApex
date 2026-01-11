@@ -80,7 +80,7 @@
 // === Ordre des armes pour le cycle ===
 // ⚠ Utiliser les noms EXACTS: R99, R301, FLATLINE, VOLT, SPITFIRE
 #ifndef CFG_WEAPON_ORDER_STRING
-#define CFG_WEAPON_ORDER_STRING "VOLT, FLATLINE, R301, R99"
+#define CFG_WEAPON_ORDER_STRING "VOLT, FLATLINE, R301, R99, SPITFIRE"
 #endif
 
 #endif // CFG_USER_PROFILE == 0
@@ -160,7 +160,7 @@
 // === Ordre des armes pour le cycle ===
 // ⚠ Utiliser les noms EXACTS: R99, R301, FLATLINE, VOLT, SPITFIRE
 #ifndef CFG_WEAPON_ORDER_STRING
-#define CFG_WEAPON_ORDER_STRING "VOLT, FLATLINE, R301, R99"
+#define CFG_WEAPON_ORDER_STRING "VOLT, FLATLINE, R301, R99, SPITFIRE"
 #endif
 
 #endif // CFG_USER_PROFILE == 1
