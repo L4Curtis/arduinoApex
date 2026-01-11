@@ -374,7 +374,7 @@ static void updateDisplay(){
     uint8_t x1 = (128 - w1) / 2;
     u8g2.drawStr(x1, 48, line1);
 
-    // -------- Ligne 2 : ARME SUIVANTE (centrée, toujours) --------
+    // -------- Ligne 2 : PROCHAINE ARME (centrée, toujours) --------
     char line2[24];
     char nextName[12];
     bool hasNext = false;
@@ -404,10 +404,10 @@ static void updateDisplay(){
     }
 
     if (hasNext) {
-      strcpy(line2, "Suiv: ");
+      strcpy(line2, "Next: ");
       strcat(line2, nextName);
     } else {
-      strcpy(line2, "Suiv: OFF");
+      strcpy(line2, "Next: OFF");
     }
 
     uint8_t w2 = u8g2.getStrWidth(line2);
