@@ -201,18 +201,48 @@ static float readFloat_P(const float* addr){
   return v;
 }
 
-// Fonctions simplifiées pour le troll
-static void cycleToNextWeapon(){
-  // Ne fait rien pour le troll
+static int8_t floatToInt8(float v){
+  if(v > 127.0f)       v = 127.0f;
+  else if(v < -128.0f) v = -128.0f;
+  v = (v >= 0.0f) ? (v + 0.5f) : (v - 0.5f);
+  return (int8_t)v;
 }
 
+// =============== Parse ordre "R99, R301, FLATLINE" -> indices =============
 static bool weaponNameToIndex(const char* name, uint8_t &idx){
-  idx = 0; // Évite un warning
+  if     (strcasecmp(name,"R99")      == 0){ idx=IDX_R99;       return true; }
+  else if(strcasecmp(name,"R301")     == 0){ idx=IDX_R301;      return true; }
+  else if(strcasecmp(name,"FLATLINE") == 0){ idx=IDX_FLAT;      return true; }
+  else if(strcasecmp(name,"VOLT")     == 0){ idx=IDX_VOLT;      return true; }
+  else if(strcasecmp(name,"SPITFIRE") == 0){ idx=IDX_SPITFIRE;  return true; }
   return false;
 }
 
 static void parseWeaponOrder(const char* list){
-  // Ne fait rien pour le troll
+  char buf[96];
+  strncpy(buf, list, sizeof(buf)-1);
+  buf[sizeof(buf)-1]=0;
+
+  char* p = buf;
+  WEAPON_ORDER_SIZE = 0;
+
+  while(p && WEAPON_ORDER_SIZE < WEAPON_COUNT){
+    while(*p==' ' || *p=='\t') ++p;
+    char* comma = strchr(p, ',');
+    if(comma) *comma = 0;
+    int n = strlen(p);
+    while(n>0 && (p[n-1]==' ' || p[n-1]=='\t')) p[--n]=0;
+    uint8_t idx;
+    if(n>0 && weaponNameToIndex(p, idx)){
+      WEAPON_ORDER[WEAPON_ORDER_SIZE++] = idx;
+    }
+    if(!comma) break;
+    p = comma + 1;
+  }
+  if(WEAPON_ORDER_SIZE == 0){
+    WEAPON_ORDER[0] = IDX_R99;
+    WEAPON_ORDER_SIZE = 1;
+  }
 }
 
 // ====================== PARSEUR SOURIS ===================================
@@ -234,35 +264,121 @@ protected:
   void OnLeftButtonDown(MOUSEINFO *mi){
     leftPressed = true;
     Mouse.press(MOUSE_LEFT);
+
+    bool ok = (ACTIVATION_MODE==0)
+              ? (scriptEnabled && currentWeaponIndex>=0)
+              : (scriptEnabled && rightPressed && currentWeaponIndex>=0);
+
+    if(ok){
+      patternActive       = true;
+      patternStartTime    = millis();
+      currentPatternIndex = 0;
+      lastPatternX        = 0;
+      lastPatternY        = 0;
+    }
   }
 
   void OnLeftButtonUp(MOUSEINFO *mi){
     leftPressed = false;
     Mouse.release(MOUSE_LEFT);
+    if(patternActive){
+      patternActive = false;
+    }
   }
 
   void OnRightButtonDown(MOUSEINFO *mi){
     rightPressed = true;
     Mouse.press(MOUSE_RIGHT);
+
+    if(ACTIVATION_MODE==1 && scriptEnabled && leftPressed && currentWeaponIndex>=0){
+      patternActive       = true;
+      patternStartTime    = millis();
+      currentPatternIndex = 0;
+      lastPatternX        = 0;
+      lastPatternY        = 0;
+    }
   }
 
   void OnRightButtonUp(MOUSEINFO *mi){
     rightPressed = false;
     Mouse.release(MOUSE_RIGHT);
+    if(patternActive && ACTIVATION_MODE==1){
+      patternActive = false;
+    }
   }
+
   void OnMiddleButtonDown(MOUSEINFO *mi){
-    Mouse.press(MOUSE_MIDDLE);
+    mmbDownAt = millis();
+    mmbArmed  = true;
+
+    if(!ENABLE_WHEEL_CYCLE && !ENABLE_MMB_MODE_TOGGLE){
+      Mouse.press(MOUSE_MIDDLE);
+    }
   }
 
   void OnMiddleButtonUp(MOUSEINFO *mi){
-    Mouse.release(MOUSE_MIDDLE);
+    unsigned long held = millis() - mmbDownAt;
+
+    if(!mmbArmed){
+      if(!ENABLE_WHEEL_CYCLE && !ENABLE_MMB_MODE_TOGGLE) Mouse.release(MOUSE_MIDDLE);
+      return;
+    }
+
+    if(ENABLE_MMB_MODE_TOGGLE && held >= MODE_TOGGLE_THRESHOLD_MS){
+      ACTIVATION_MODE = (ACTIVATION_MODE == 0) ? 1 : 0;
+      displayNeedsUpdate = true;
+    } else {
+      if(ENABLE_WHEEL_CYCLE){
+        cycleToNextWeapon();
+      } else {
+        Mouse.press(MOUSE_MIDDLE);
+        Mouse.release(MOUSE_MIDDLE);
+      }
+    }
+    mmbArmed = false;
   }
+
   void OnXB1ButtonDown(MOUSEINFO *mi){
-    Mouse.press(MOUSE_XB1);
+    xb1DownAt = millis();
+    xb1Armed  = true;
+
+    if(!ENABLE_XB1_CYCLE && !ENABLE_XB1_MODE_TOGGLE){
+      Mouse.press(MOUSE_XB1);
+    }
   }
 
   void OnXB1ButtonUp(MOUSEINFO *mi){
-    Mouse.release(MOUSE_XB1);
+    unsigned long held = millis() - xb1DownAt;
+    const uint16_t shortPress = 600;
+
+    if(!xb1Armed){
+      if(!ENABLE_XB1_CYCLE && !ENABLE_XB1_MODE_TOGGLE) Mouse.release(MOUSE_XB1);
+      return;
+    }
+
+    if(held >= MODE_TOGGLE_THRESHOLD_MS){
+      if(ENABLE_XB1_MODE_TOGGLE){
+        ACTIVATION_MODE = (ACTIVATION_MODE == 0) ? 1 : 0;
+        displayNeedsUpdate = true;
+      } else {
+        Mouse.press(MOUSE_XB1);
+        Mouse.release(MOUSE_XB1);
+      }
+    }
+    else if(held < shortPress){
+      if(ENABLE_XB1_CYCLE){
+        cycleToNextWeapon();
+      } else {
+        Mouse.press(MOUSE_XB1);
+        Mouse.release(MOUSE_XB1);
+      }
+    }
+    else {
+      Mouse.press(MOUSE_XB1);
+      Mouse.release(MOUSE_XB1);
+    }
+
+    xb1Armed = false;
   }
 
   void OnXB2ButtonDown(MOUSEINFO *mi){
@@ -311,6 +427,34 @@ static void updateDisplay(){
   } while (u8g2.nextPage());
 }
 
+static void cycleToNextWeapon(){
+  patternActive = false;
+
+  for(uint8_t attempts = 0; attempts <= WEAPON_ORDER_SIZE; attempts++){
+    currentOrderPosition++;
+    if(currentOrderPosition >= WEAPON_ORDER_SIZE){
+      // OFF
+      currentOrderPosition = -1;
+      currentWeaponIndex   = -1;
+      scriptEnabled        = false;
+      displayNeedsUpdate   = true;
+      return;
+    }
+
+    uint8_t weaponIdx = WEAPON_ORDER[currentOrderPosition];
+    if(((Weapon&)weapons[weaponIdx]).enabled == 1){
+      currentWeaponIndex = weaponIdx;
+      scriptEnabled      = true;
+      displayNeedsUpdate = true;
+      return;
+    }
+  }
+
+  currentOrderPosition = -1;
+  currentWeaponIndex   = -1;
+  scriptEnabled        = false;
+  displayNeedsUpdate   = true;
+}
 
 // ====================== SETUP / LOOP ======================================
 void setup(){
