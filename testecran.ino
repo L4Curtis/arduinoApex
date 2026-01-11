@@ -49,25 +49,7 @@ uint8_t WEAPON_ORDER[WEAPON_COUNT];
 uint8_t WEAPON_ORDER_SIZE = 0;
 
 // ======================= PATTERNS (PROGMEM) ===============================
-// Inclusions conditionnelles des patterns d'armes
-#include "weapons_r99.h"
-#include "weapons_r301.h"
-#include "weapons_flatline.h"
-#include "weapons_volt.h"
-#include "weapons_spitfire.h"
-
-
-// ======================= CATALOGUE & ETAT ================================
-struct Weapon {
-  const char* name_P;
-  uint8_t size;
-  const uint16_t* tp_P;
-  const float*    x_P;
-  const float*    y_P;
-  uint8_t enabled;
-};
-
-// Définitions conditionnelles pour les armes désactivées
+// Définitions par défaut pour les armes désactivées
 #ifndef CFG_ENABLE_R99
 #define NAME_R99      "R99"
 #define SIZE_R99      0
@@ -107,6 +89,24 @@ struct Weapon {
 #define X_SPITFIRE    nullptr
 #define Y_SPITFIRE    nullptr
 #endif
+
+// Inclusions conditionnelles des patterns d'armes
+#include "weapons_r99.h"
+#include "weapons_r301.h"
+#include "weapons_flatline.h"
+#include "weapons_volt.h"
+#include "weapons_spitfire.h"
+
+
+// ======================= CATALOGUE & ETAT ================================
+struct Weapon {
+  const char* name_P;
+  uint8_t size;
+  const uint16_t* tp_P;
+  const float*    x_P;
+  const float*    y_P;
+  uint8_t enabled;
+};
 
 const Weapon weapons[WEAPON_COUNT] = {
   { NAME_R99,      SIZE_R99,      TP_R99,      X_R99,      Y_R99,      0 },
