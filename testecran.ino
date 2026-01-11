@@ -24,13 +24,14 @@
 U8G2_SH1107_SEEED_128X128_1_HW_I2C u8g2(U8G2_R1);
 
 // ====================== CONSTANTES ARMES ==================================
-enum { IDX_R99=0, IDX_R301, IDX_FLAT, WEAPON_COUNT };
+enum { IDX_R99=0, IDX_R301, IDX_FLAT, IDX_VOLT, WEAPON_COUNT };
 
 // Valeurs runtime depuis la config
 uint8_t ACTIVATION_MODE              = CFG_ACTIVATION_MODE;
 uint8_t ENABLE_R99                   = CFG_ENABLE_R99;
 uint8_t ENABLE_R301                  = CFG_ENABLE_R301;
 uint8_t ENABLE_FLATLINE              = CFG_ENABLE_FLATLINE;
+uint8_t ENABLE_VOLT                 = CFG_ENABLE_VOLT;
 float   REFERENCE_GAME_SENSITIVITY   = CFG_REFERENCE_GAME_SENSITIVITY;
 float   USER_GAME_SENSITIVITY        = CFG_USER_GAME_SENSITIVITY;
 float   USER_ADDITIONAL_COMPENSATION = CFG_USER_ADDITIONAL_COMPENSATION;
@@ -83,6 +84,18 @@ const float Y_FLAT[SIZE_FLAT] PROGMEM = {
   0,-47.8,-68,-101.6,-122.5,-150.6,-178.3,-185.3,-175.5,-171,-182.2,-202.1,-208.4,-226.3,-226.5,-227.6,-244.7,-266.2,-280,-294.9,-296.7,-303.4,-317.9,-323.3,-333.1,-337,-341.3,-338.5,-355.9
 };
 
+const char NAME_VOLT[] PROGMEM = "VOLT";
+const uint8_t SIZE_VOLT = 26;
+const uint16_t TP_VOLT[SIZE_VOLT] PROGMEM = {
+  0,83,167,250,333,417,500,583,667,750,833,917,1000,1083,1167,1250,1333,1417,1500,1583,1667,1750,1833,1917,2000,2083
+};
+const float X_VOLT[SIZE_VOLT] PROGMEM = {
+  0,11.2,13.8,10.4,21.2,20.5,39.3,44.7,35,46.2,44.6,28.5,8,-5.1,-17.4,-12.8,0.5,10,5.9,-3.1,-12.9,-21.1,-23.1,-23.1,-24.9,-26.3
+};
+const float Y_VOLT[SIZE_VOLT] PROGMEM = {
+  0,-28.6,-64,-106.9,-128.8,-177.8,-205.6,-248.3,-279.3,-312.2,-333.8,-339.7,-336.4,-350,-365.8,-376.8,-377.4,-379,-388.2,-395.3,-399.4,-398.7,-401,-407.5,-414,-427
+};
+
 // ======================= CATALOGUE & ETAT ================================
 struct Weapon {
   const char* name_P;
@@ -96,7 +109,8 @@ struct Weapon {
 const Weapon weapons[WEAPON_COUNT] = {
   { NAME_R99,  SIZE_R99,  TP_R99,  X_R99,  Y_R99,  0 },
   { NAME_R301, SIZE_R301, TP_R301, X_R301, Y_R301, 0 },
-  { NAME_FLAT, SIZE_FLAT, TP_FLAT, X_FLAT, Y_FLAT, 0 }
+  { NAME_FLAT, SIZE_FLAT, TP_FLAT, X_FLAT, Y_FLAT, 0 },
+  { NAME_VOLT, SIZE_VOLT, TP_VOLT, X_VOLT, Y_VOLT, 0 }
 };
 
 int8_t  currentWeaponIndex   = -1;
@@ -142,6 +156,7 @@ static bool weaponNameToIndex(const char* name, uint8_t &idx){
   if     (strcasecmp(name,"R99")     == 0){ idx=IDX_R99;  return true; }
   else if(strcasecmp(name,"R301")    == 0){ idx=IDX_R301; return true; }
   else if(strcasecmp(name,"FLATLINE")== 0){ idx=IDX_FLAT; return true; }
+  else if(strcasecmp(name,"VOLT")    == 0){ idx=IDX_VOLT; return true; }
   return false;
 }
 
@@ -434,6 +449,7 @@ void setup(){
   ((Weapon&)weapons[IDX_R99]).enabled  = ENABLE_R99;
   ((Weapon&)weapons[IDX_R301]).enabled = ENABLE_R301;
   ((Weapon&)weapons[IDX_FLAT]).enabled = ENABLE_FLATLINE;
+  ((Weapon&)weapons[IDX_VOLT]).enabled = ENABLE_VOLT;
 
   Mouse.begin();
   pinMode(10, OUTPUT);
