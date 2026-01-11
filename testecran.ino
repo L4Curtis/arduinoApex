@@ -404,10 +404,9 @@ static void updateDisplay(){
     }
 
     if (hasNext) {
-      strcpy(line2, "Next: ");
-      strcat(line2, nextName);
+      strcpy(line2, nextName);
     } else {
-      strcpy(line2, "Next: OFF");
+      strcpy(line2, "OFF");
     }
 
     uint8_t w2 = u8g2.getStrWidth(line2);
