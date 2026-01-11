@@ -1,2 +1,2 @@
 # Fichier de configuration utilisateur (contient les préférences personnelles)
-user_config.h
+# user_config.h -> géré avec skip-worktree
