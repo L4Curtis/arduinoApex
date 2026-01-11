@@ -24,7 +24,7 @@
 U8G2_SH1107_SEEED_128X128_1_HW_I2C u8g2(U8G2_R1);
 
 // ====================== CONSTANTES ARMES ==================================
-enum { IDX_R99=0, IDX_R301, IDX_FLAT, IDX_VOLT, WEAPON_COUNT };
+enum { IDX_R99=0, IDX_R301, IDX_FLAT, IDX_VOLT, IDX_SPITFIRE, WEAPON_COUNT };
 
 // Valeurs runtime depuis la config
 uint8_t ACTIVATION_MODE              = CFG_ACTIVATION_MODE;
@@ -32,6 +32,7 @@ uint8_t ENABLE_R99                   = CFG_ENABLE_R99;
 uint8_t ENABLE_R301                  = CFG_ENABLE_R301;
 uint8_t ENABLE_FLATLINE              = CFG_ENABLE_FLATLINE;
 uint8_t ENABLE_VOLT                 = CFG_ENABLE_VOLT;
+uint8_t ENABLE_SPITFIRE             = CFG_ENABLE_SPITFIRE;
 float   REFERENCE_GAME_SENSITIVITY   = CFG_REFERENCE_GAME_SENSITIVITY;
 float   USER_GAME_SENSITIVITY        = CFG_USER_GAME_SENSITIVITY;
 float   USER_ADDITIONAL_COMPENSATION = CFG_USER_ADDITIONAL_COMPENSATION;
@@ -96,6 +97,18 @@ const float Y_VOLT[SIZE_VOLT] PROGMEM = {
   0,-28.6,-64,-106.9,-128.8,-177.8,-205.6,-248.3,-279.3,-312.2,-333.8,-339.7,-336.4,-350,-365.8,-376.8,-377.4,-379,-388.2,-395.3,-399.4,-398.7,-401,-407.5,-414,-427
 };
 
+const char NAME_SPITFIRE[] PROGMEM = "SPITFIRE";
+const uint8_t SIZE_SPITFIRE = 55;
+const uint16_t TP_SPITFIRE[SIZE_SPITFIRE] PROGMEM = {
+  0,111,222,333,444,555,666,777,888,1000,1111,1222,1333,1444,1555,1666,1777,1888,2000,2111,2222,2333,2444,2555,2666,2777,2888,3000,3111,3222,3333,3444,3555,3666,3777,3888,4000,4111,4222,4333,4444,4555,4666,4777,4888,5000,5111,5222,5333,5444,5555,5666,5777,5888,6000
+};
+const float X_SPITFIRE[SIZE_SPITFIRE] PROGMEM = {
+  0,-2.1,-4.8,-17.1,-24.8,-30.4,-30.4,-24.5,-13.4,-10.5,-5.8,-3.1,-10.2,-24.1,-33.6,-46.6,-53,-58.1,-63,-73.1,-85,-90.8,-88.2,-77.3,-70.1,-59.7,-48.7,-36.8,-32.9,-27,-26.4,-13.4,-8.7,-3.4,0.6,-6.1,-19.4,-25,-38.4,-45.7,-47.4,-51.3,-61,-73.1,-78.5,-75.8,-67.2,-61.4,-50.3,-39.7,-27.7,-23.6,-17.1,-17.6,-3.3
+};
+const float Y_SPITFIRE[SIZE_SPITFIRE] PROGMEM = {
+  0,-35.4,-47.7,-69.2,-84.4,-105.3,-128.2,-135.1,-131.3,-128,-134.7,-150.5,-156.2,-166.2,-170.3,-166.2,-169.8,-188.1,-204.6,-213.7,-217,-218.2,-230.6,-236.7,-241.6,-247.7,-252.3,-245.7,-256,-269.6,-278,-274.4,-269.6,-276.2,-290.2,-293.2,-303.7,-305.8,-300.6,-302.7,-321.3,-340,-351.8,-355.8,-357.6,-371.9,-381.2,-388.3,-397.7,-403.3,-398.6,-410.3,-424.8,-437.8,-435.1
+};
+
 // ======================= CATALOGUE & ETAT ================================
 struct Weapon {
   const char* name_P;
@@ -107,10 +120,11 @@ struct Weapon {
 };
 
 const Weapon weapons[WEAPON_COUNT] = {
-  { NAME_R99,  SIZE_R99,  TP_R99,  X_R99,  Y_R99,  0 },
-  { NAME_R301, SIZE_R301, TP_R301, X_R301, Y_R301, 0 },
-  { NAME_FLAT, SIZE_FLAT, TP_FLAT, X_FLAT, Y_FLAT, 0 },
-  { NAME_VOLT, SIZE_VOLT, TP_VOLT, X_VOLT, Y_VOLT, 0 }
+  { NAME_R99,      SIZE_R99,      TP_R99,      X_R99,      Y_R99,      0 },
+  { NAME_R301,     SIZE_R301,     TP_R301,     X_R301,     Y_R301,     0 },
+  { NAME_FLAT,     SIZE_FLAT,     TP_FLAT,     X_FLAT,     Y_FLAT,     0 },
+  { NAME_VOLT,     SIZE_VOLT,     TP_VOLT,     X_VOLT,     Y_VOLT,     0 },
+  { NAME_SPITFIRE, SIZE_SPITFIRE, TP_SPITFIRE, X_SPITFIRE, Y_SPITFIRE, 0 }
 };
 
 int8_t  currentWeaponIndex   = -1;
@@ -153,10 +167,11 @@ static int8_t floatToInt8(float v){
 
 // =============== Parse ordre "R99, R301, FLATLINE" -> indices =============
 static bool weaponNameToIndex(const char* name, uint8_t &idx){
-  if     (strcasecmp(name,"R99")     == 0){ idx=IDX_R99;  return true; }
-  else if(strcasecmp(name,"R301")    == 0){ idx=IDX_R301; return true; }
-  else if(strcasecmp(name,"FLATLINE")== 0){ idx=IDX_FLAT; return true; }
-  else if(strcasecmp(name,"VOLT")    == 0){ idx=IDX_VOLT; return true; }
+  if     (strcasecmp(name,"R99")      == 0){ idx=IDX_R99;       return true; }
+  else if(strcasecmp(name,"R301")     == 0){ idx=IDX_R301;      return true; }
+  else if(strcasecmp(name,"FLATLINE") == 0){ idx=IDX_FLAT;      return true; }
+  else if(strcasecmp(name,"VOLT")     == 0){ idx=IDX_VOLT;      return true; }
+  else if(strcasecmp(name,"SPITFIRE") == 0){ idx=IDX_SPITFIRE;  return true; }
   return false;
 }
 
@@ -446,10 +461,11 @@ void setup(){
 
   parseWeaponOrder(CFG_WEAPON_ORDER_STRING);
 
-  ((Weapon&)weapons[IDX_R99]).enabled  = ENABLE_R99;
-  ((Weapon&)weapons[IDX_R301]).enabled = ENABLE_R301;
-  ((Weapon&)weapons[IDX_FLAT]).enabled = ENABLE_FLATLINE;
-  ((Weapon&)weapons[IDX_VOLT]).enabled = ENABLE_VOLT;
+  ((Weapon&)weapons[IDX_R99]).enabled       = ENABLE_R99;
+  ((Weapon&)weapons[IDX_R301]).enabled      = ENABLE_R301;
+  ((Weapon&)weapons[IDX_FLAT]).enabled      = ENABLE_FLATLINE;
+  ((Weapon&)weapons[IDX_VOLT]).enabled       = ENABLE_VOLT;
+  ((Weapon&)weapons[IDX_SPITFIRE]).enabled   = ENABLE_SPITFIRE;
 
   Mouse.begin();
   pinMode(10, OUTPUT);
