@@ -4,7 +4,7 @@
 // === SÉLECTEUR DE CONFIGURATION ===
 // 0 = Configuration Curtis / 1 = Configuration Enzo
 #ifndef CFG_USER_PROFILE
-#define CFG_USER_PROFILE 0
+#define CFG_USER_PROFILE 1
 #endif
 
 // ==========================================================================
@@ -98,7 +98,7 @@
 
 // === Armes activées (1=ON, 0=OFF) ===
 #ifndef CFG_ENABLE_R99
-#define CFG_ENABLE_R99 1
+#define CFG_ENABLE_R99 0
 #endif
 #ifndef CFG_ENABLE_R301
 #define CFG_ENABLE_R301 1
